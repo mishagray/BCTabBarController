@@ -6,11 +6,13 @@
 
 - (id)initWithFrame:(CGRect)aFrame;
 - (void)setSelectedTab:(BCTab *)aTab animated:(BOOL)animated;
+- (void)setSelectedTabNum:(NSUInteger)tabNum animated:(BOOL)animated;
 
-@property (nonatomic, retain) NSArray *tabs;
-@property (nonatomic, retain) BCTab *selectedTab;
+@property (nonatomic, strong) NSArray *tabs;
+@property (nonatomic, assign) NSUInteger selectedTabNum;
+@property (nonatomic, strong) BCTab *selectedTab;
 @property (nonatomic, assign) id <BCTabBarDelegate> delegate;
-@property (nonatomic, retain) UIImageView *arrow;
+@property (nonatomic, strong) UIImageView *arrow;
 @end
 
 @protocol BCTabBarDelegate

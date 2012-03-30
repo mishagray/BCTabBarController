@@ -7,4 +7,8 @@
 	return nil;
 }
 
+- (NSString *)iconTitle {
+	return nil;
+}
+
 @end

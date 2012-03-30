@@ -15,15 +15,18 @@
 
 
 @implementation BCTabBarController
-@synthesize viewControllers, tabBar, selectedTab, selectedViewController, tabBarView, visible;
+@synthesize viewControllers, tabBar, selectedTab, selectedViewController, tabBarView, visible, height;
 
 - (void)loadView {
+    
+    if (self.height == 0) {
+        self.height = 59 + 6; // tabbar + arrow
+    }
 	self.tabBarView = [[BCTabBarView alloc] initWithFrame:[[UIScreen mainScreen] applicationFrame]];
 	self.view = self.tabBarView;
 
-	CGFloat tabBarHeight = 44 + 6; // tabbar + arrow
 	CGFloat adjust = (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) ? 1 : 0;
-	self.tabBar = [[BCTabBar alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - tabBarHeight, self.view.bounds.size.width, tabBarHeight + adjust)];
+	self.tabBar = [[BCTabBar alloc] initWithFrame:CGRectMake(0, self.view.bounds.size.height - self.height, self.view.bounds.size.width, self.height+adjust)];
 	self.tabBar.delegate = self;
 	
 	self.tabBarView.backgroundColor = [UIColor clearColor];
@@ -36,6 +39,7 @@
 }
 
 - (void)tabBar:(BCTabBar *)aTabBar didSelectTabAtIndex:(NSInteger)index {
+    NSLog(@"tabBar didSelectTabAtIndex:%d",index);
 	UIViewController *vc = [self.viewControllers objectAtIndex:index];
 	if (self.selectedViewController == vc) {
 		if ([self.selectedViewController isKindOfClass:[UINavigationController class]]) {
@@ -50,18 +54,20 @@
 - (void)setSelectedViewController:(UIViewController *)vc {
 	UIViewController *oldVC = selectedViewController;
 	if (selectedViewController != vc) {
+        NSUInteger tabNum = [self.viewControllers indexOfObject:vc];
 		selectedViewController = vc;
         if (!self.childViewControllers && visible) {
 			[oldVC viewWillDisappear:NO];
 			[selectedViewController viewWillAppear:NO];
 		}
-		self.tabBarView.contentView = vc.view;
+		self.tabBarView.selectedTab = tabNum;
+        NSLog(@"setSelectedVewController %d",tabNum);
+		[self.tabBar setSelectedTab:[self.tabBar.tabs objectAtIndex:self.selectedIndex] animated:(oldVC != nil)];
+
         if (!self.childViewControllers && visible) {
 			[oldVC viewDidDisappear:NO];
 			[selectedViewController viewDidAppear:NO];
 		}
-		
-		[self.tabBar setSelectedTab:[self.tabBar.tabs objectAtIndex:self.selectedIndex] animated:(oldVC != nil)];
 	}
 }
 
@@ -103,16 +109,23 @@
 }
 
 - (void)setSelectedIndex:(NSUInteger)aSelectedIndex {
-	if (self.viewControllers.count > aSelectedIndex)
+	if (self.viewControllers.count > aSelectedIndex) {
+        NSLog(@"setSelectedIndex:%d",aSelectedIndex);
 		self.selectedViewController = [self.viewControllers objectAtIndex:aSelectedIndex];
+    }
 }
 
 - (void)loadTabs {
-	NSMutableArray *tabs = [NSMutableArray arrayWithCapacity:self.viewControllers.count];
+    NSLog(@"loadtabs");
+    NSUInteger count = self.viewControllers.count;
+	NSMutableArray *tabs = [NSMutableArray arrayWithCapacity:count];
+	NSMutableArray *tabViews = [NSMutableArray arrayWithCapacity:count];
 	for (UIViewController *vc in self.viewControllers) {
-		[tabs addObject:[[BCTab alloc] initWithIconImageName:[vc iconImageName]]];
+        [tabs addObject:[[BCTab alloc] initWithIconImageName:[vc iconImageName] andTitle:[vc iconTitle]]];
+        [tabViews addObject:vc.view];
 	}
 	self.tabBar.tabs = tabs;
+    self.tabBarView.tabViews = tabViews;
 	[self.tabBar setSelectedTab:[self.tabBar.tabs objectAtIndex:self.selectedIndex] animated:NO];
 }
 

@@ -4,6 +4,5 @@
 	UIImage *rightBorder;
 }
 
-- (id)initWithIconImageName:(NSString *)imageName;
-
+- (id)initWithIconImageName:(NSString *)imageName andTitle:(NSString*)title;
 @end

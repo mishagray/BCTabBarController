@@ -8,7 +8,7 @@
 @implementation BCTab
 @synthesize rightBorder, background;
 
-- (id)initWithIconImageName:(NSString *)imageName {
+- (id)initWithIconImageName:(NSString *)imageName andTitle:(NSString*)title {
 	if (self = [super init]) {
 		self.adjustsImageWhenHighlighted = NO;
 		self.background = [UIImage imageNamed:@"BCTabBarController.bundle/tab-background.png"];
@@ -19,8 +19,11 @@
 								   [imageName stringByDeletingPathExtension],
 								   [imageName pathExtension]];
 		
+        [self setTitle:title forState:UIControlStateNormal];
 		[self setImage:[UIImage imageNamed:imageName] forState:UIControlStateNormal];
 		[self setImage:[UIImage imageNamed:selectedName] forState:UIControlStateSelected];
+        [self setBackgroundImage:self.background forState:UIControlStateSelected];
+        self.imageView.contentMode = UIViewContentModeScaleToFill;
 	}
 	return self;
 }
@@ -29,6 +32,8 @@
 	// no highlight state
 }
 
+
+/*
 - (void)drawRect:(CGRect)rect {
 	if (self.selected) {
 		[background drawAtPoint:CGPointMake(0, 2)];
@@ -36,11 +41,12 @@
 		CGContextRef c = UIGraphicsGetCurrentContext();
 		[RGBCOLOR(24, 24, 24) set]; 
 		CGContextFillRect(c, CGRectMake(0, self.bounds.size.height / 2, self.bounds.size.width, self.bounds.size.height / 2));
-		[RGBCOLOR(14, 14, 14) set];		
+		[RGBCOLOR(24, 24, 24) set];
+//		[RGBCOLOR(14, 14, 14) set];
 		CGContextFillRect(c, CGRectMake(0, self.bounds.size.height / 2, 0.5, self.bounds.size.height / 2));
-		CGContextFillRect(c, CGRectMake(self.bounds.size.width - 0.5, self.bounds.size.height / 2, 0.5, self.bounds.size.height / 2));
+		CGContextFillRect(c, CGRectMake(self.bounds.size.width - 0.5, self.bounds.size.height / 2, 0.5, self.bounds.size.height / 2)); 
 	}
-}
+} */
 
 - (void)setFrame:(CGRect)aFrame {
 	[super setFrame:aFrame];
